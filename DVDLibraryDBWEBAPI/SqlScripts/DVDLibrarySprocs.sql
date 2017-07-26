@@ -1,0 +1,161 @@
+USE DVDLibrary
+GO
+
+IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+   WHERE ROUTINE_NAME = 'DVDSelectAll')
+      DROP PROCEDURE DVDSelectAll
+GO
+
+CREATE PROCEDURE DVDSelectAll AS
+BEGIN
+	SELECT DVDId, Title, ReleaseYear, Rating, Director, Notes
+	FROM DVD
+END
+
+GO
+
+IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+   WHERE ROUTINE_NAME = 'DVDSelectById')
+      DROP PROCEDURE DVDSelectById
+GO
+
+CREATE PROCEDURE DVDSelectById(
+	@DVDId INT
+) AS
+BEGIN
+	SELECT DVDId, Title, ReleaseYear, Rating, Director, Notes
+	FROM DVD
+	WHERE DVDId = @DVDId
+END
+
+GO
+
+IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+   WHERE ROUTINE_NAME = 'DvdSelectByTitle')
+      DROP PROCEDURE DVDSelectByTitle
+GO
+
+CREATE PROCEDURE DVDSelectByTitle(
+	@Title NVARCHAR(50)
+) AS
+BEGIN
+	SELECT DVDId, Title, ReleaseYear, Rating, Director, Notes
+	FROM DVD
+	WHERE Title LIKE @Title
+END
+
+GO
+
+IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+   WHERE ROUTINE_NAME = 'DvdSelectByYear')
+      DROP PROCEDURE DVDSelectByYear
+GO
+
+CREATE PROCEDURE DVDSelectByYear(
+	@Year VARCHAR(4)
+) AS
+BEGIN
+	SELECT DVDId, Title, ReleaseYear, Rating, Director, Notes
+	FROM DVD
+	WHERE ReleaseYear LIKE @Year
+END
+
+GO
+
+IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+   WHERE ROUTINE_NAME = 'DvdSelectByDirector')
+      DROP PROCEDURE DVDSelectByDirector
+GO
+
+CREATE PROCEDURE DVDSelectByDirector(
+	@Director VARCHAR(32)
+) AS
+BEGIN
+	SELECT DVDId, Title, ReleaseYear, Rating, Director, Notes
+	FROM DVD
+	WHERE Director LIKE @Director
+END
+
+GO
+
+IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+   WHERE ROUTINE_NAME = 'DvdSelectByRating')
+      DROP PROCEDURE DVDSelectByRating
+GO
+
+CREATE PROCEDURE DVDSelectByRating(
+	@Rating NVARCHAR(5)
+) AS
+BEGIN
+	SELECT DVDId, Title, ReleaseYear, Rating, Director, Notes
+	FROM DVD
+	WHERE Rating LIKE @Rating
+END
+
+GO
+
+IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+   WHERE ROUTINE_NAME = 'DVDCreate')
+      DROP PROCEDURE DVDCreate
+GO
+
+CREATE PROCEDURE DVDCreate (
+	@DVDId INT OUTPUT,
+	@Title NVARCHAR(50),
+	@Rating VARCHAR(5),
+	@Director VARCHAR(32),
+	@ReleaseYear VARCHAR(4),
+	@Notes nvarchar(240)
+) AS
+BEGIN
+	INSERT INTO DVD(Title, Rating, Director, ReleaseYear, Notes)
+	VALUES (@Title, @Rating, @Director, @ReleaseYear, @Notes);
+
+	SET @DVDId = SCOPE_IDENTITY();
+
+END
+
+GO
+
+IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+   WHERE ROUTINE_NAME = 'DVDUpdate')
+      DROP PROCEDURE DVDUpdate
+GO
+
+CREATE PROCEDURE DVDUpdate (
+	@DVDId INT,
+	@Title VARCHAR(128),
+	@Director VARCHAR(32),
+	@Rating VARCHAR(5),
+	@Notes NVARCHAR(240),
+	@ReleaseYear VARCHAR(4)
+) AS
+BEGIN
+	UPDATE DVD SET 
+		Title = @Title,
+		Director = @Director,
+		Rating = @Rating,
+		Notes = @Notes,
+		ReleaseYear = @ReleaseYear
+	WHERE DVDId = @DVDId
+END
+
+GO
+
+IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+   WHERE ROUTINE_NAME = 'DVDDelete')
+      DROP PROCEDURE DVDDelete
+GO
+
+CREATE PROCEDURE DVDDelete (
+	@DVDId INT
+) AS
+BEGIN
+	BEGIN TRANSACTION
+
+		DELETE FROM DVD WHERE DVDId = @DVDId;
+
+	COMMIT TRANSACTION
+END
+
+GO
